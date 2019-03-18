@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  strategy: 
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+        pipelineId: '{{.Env.CI_PIPELINE_ID}}'
+    spec:
+      securityContext:
+        runAsUser: 2000
+      containers:
+      - name: nginx
+        image: {{.Env.IMAGE_TAG_NGINX}}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SERVER_HOST
+          value: server
+        envFrom:
+        - configMapRef:
+            name: shared
+        - secretRef:
+            name: shared
+      imagePullSecrets:
+      - name: regsecret

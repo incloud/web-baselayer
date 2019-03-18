@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx
+  annotations:
+    ingress.kubernetes.io/force-ssl-redirect: 'true'
+spec:
+  rules:
+  - host: '{{.Env.NGINX_HOST}}'
+    http:
+      paths:
+      - backend:
+          serviceName: nginx
+          servicePort: 80

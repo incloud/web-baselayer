@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "declaration": true,
+    "removeComments": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowSyntheticDefaultImports": false,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "composite": true,
+    "typeRoots": ["./types", "./node_modules/@types/"],
+    "paths": {
+      "*": ["./types/*"],
+      "@baselayer/*": ["./*/src"]
+    }
+  }
+}

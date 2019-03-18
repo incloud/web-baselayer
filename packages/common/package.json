@@ -1,0 +1,27 @@
+{
+  "name": "@baselayer/common",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "tslint --project ."
+  },
+  "devDependencies": {
+    "prettier": "^1.16.4",
+    "tsc-watch": "^1.1.37",
+    "tslint": "^5.12.1",
+    "tslint-config-airbnb": "^5.11.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.3.3"
+  },
+  "dependencies": {
+    "@sentry/node": "4.5.4",
+    "winston": "3.1.0",
+    "winston-transport": "^4.3.0"
+  }
+}

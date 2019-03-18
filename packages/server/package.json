@@ -5,7 +5,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "tsc -b ../common . && cp -r ./src/views ./dist/views",
+    "build": "tsc -b ../common .",
     "start": "nodemon --exec ts-node src/index.ts",
     "lint": "tslint --project .",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js",

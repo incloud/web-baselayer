@@ -3,8 +3,7 @@ ARG IMAGE_TAG_SERVER
 FROM ${IMAGE_TAG_SERVER} as server
 WORKDIR /var/app
 
-RUN yarn bootstrap --scope=@baselayer/client --scope=@baselayer/common
-RUN yarn build --scope=@baselayer/client
+RUN yarn bootstrap --scope=@baselayer/common
 
 FROM nginx:mainline-alpine as nginx
 # Remove default configuration
@@ -28,4 +27,3 @@ RUN chown 2000 /etc/nginx/conf.d/ && \
 
 RUN mkdir -p /var/www/baselayer
 WORKDIR /var/www/baselayer
-COPY --from=server /var/app/packages/client/build .

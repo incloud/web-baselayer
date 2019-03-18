@@ -9,7 +9,6 @@ RUN apk add --no-cache --virtual .build-deps alpine-sdk python
 # Add the important files
 ADD lerna.json lerna.json
 ADD package.json package.json
-ADD packages/client/package.json packages/client/
 ADD packages/common/package.json packages/common/
 ADD packages/server/package.json packages/server/
 ADD yarn.lock yarn.lock

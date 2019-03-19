@@ -1,24 +1,27 @@
 import { authChecker } from '@baselayer/server/src/util/authChecker';
 import { createDatabaseConnection } from '@baselayer/server/src/util/createDatabaseConnection';
 import { setupPassport } from '@baselayer/server/src/util/setupPassport';
+import * as Sentry from '@sentry/node';
 import { ApolloServer } from 'apollo-server-express';
 import { createTestClient } from 'apollo-server-testing';
 import deepmerge = require('deepmerge');
 import { Express } from 'express';
 import express = require('express');
-import { DocumentNode, ExecutionResult } from 'graphql';
+import { DocumentNode, ExecutionResult, GraphQLError } from 'graphql';
 import 'jest';
-import { buildSchemaSync, useContainer as useContainerGQL } from 'type-graphql';
+import { buildSchemaSync } from 'type-graphql';
 import { Container } from 'typedi';
-import {
-  Connection,
-  getRepository,
-  useContainer as useContainerORM,
-} from 'typeorm';
+import { Connection, getRepository, useContainer } from 'typeorm';
 import { User } from '../src/entity/User';
 import { createContext } from '../src/util/context';
 import { errorHandler } from '../src/util/errorHandler';
 import { loadFixtures } from '../src/util/loadFixtures';
+
+Sentry.init({
+  level: 'warn',
+  patchGlobal: true,
+  tags: { source: 'server' },
+});
 
 interface IInitHooks {
   updateContainer?: (container: typeof Container) => void | Promise<void>;
@@ -31,8 +34,8 @@ export class Helper {
   private context: any;
 
   public async init({ updateContainer }: IInitHooks = {}): Promise<void> {
-    useContainerGQL(Container);
-    useContainerORM(Container);
+    jest.setTimeout(10000);
+    useContainer(Container);
     if (updateContainer != null) {
       await updateContainer(Container);
     }
@@ -46,9 +49,10 @@ export class Helper {
     this.app = express();
     const server = new ApolloServer({
       context: this.createContext,
-      formatError: errorHandler,
+      formatError: (err: GraphQLError) => errorHandler(err, Sentry),
       schema: buildSchemaSync({
         authChecker,
+        container: Container,
         resolvers: [`${__dirname}/../src/module/**/*Resolver.@(ts|js)`],
       }),
     });
@@ -84,9 +88,9 @@ export class Helper {
   }
 
   public async getAuthorizedContext() {
-    const user = await getRepository(User).findOneOrFail(
-      { email: 'dev@incloud.de' },
-    );
+    const user = await getRepository(User).findOneOrFail({
+      email: 'dev@incloud.de',
+    });
 
     return {
       req: {

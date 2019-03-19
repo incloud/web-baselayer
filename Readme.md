@@ -78,7 +78,7 @@ You need to have `docker` and `docker-compose` installed on your computer.
 
   ```
    docker-compose exec db sh
-   psql --user toolsharing
+   psql --user boilerplate
    CREATE DATABASE <DB_NAME>;
   ```
 

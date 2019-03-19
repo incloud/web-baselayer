@@ -73,7 +73,9 @@ describe('register', () => {
     expect(result).toBeDefined();
     expect(result.errors).toBeDefined();
     expect(result.errors).toHaveLength(1);
-    expect(result.errors![0].message).toContain('Access');
+    expect(result.errors![0].message).toContain(
+      'You need to be authorized to perform this action!',
+    );
   });
 
   it('should throw no error if authorized', async () => {

@@ -1,9 +1,9 @@
-import { AuthChecker, UnauthorizedError } from 'type-graphql';
+import { AuthChecker } from 'type-graphql';
+import { UnauthorizedError } from '../error/UnauthorizedError';
 import { IContext } from './context';
 import { isGranted, Role } from './roles';
 
 /**
- * TODO: Maybe error thrown is send to sentry
  * @param param
  * @param roles
  */

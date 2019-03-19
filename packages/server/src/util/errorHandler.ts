@@ -3,12 +3,13 @@ import {
   ForbiddenError,
   UserInputError,
   ValidationError,
-} from 'apollo-server-express';
+} from 'apollo-server-core';
 import { GraphQLError } from 'graphql';
-import { ArgumentValidationError, UnauthorizedError } from 'type-graphql';
-import { Logger } from '../logger';
+import { ArgumentValidationError } from 'type-graphql';
+// tslint:disable-next-line: no-submodule-imports
+import { EntityNotFoundError } from 'typeorm/error/EntityNotFoundError';
 
-export const errorHandler = (error: GraphQLError) => {
+export const errorHandler = (error: GraphQLError, Sentry: any) => {
   const { originalError } = error;
 
   // If the error is the clients fault, return it
@@ -16,7 +17,6 @@ export const errorHandler = (error: GraphQLError) => {
     originalError instanceof AuthenticationError ||
     originalError instanceof UserInputError ||
     originalError instanceof ForbiddenError ||
-    originalError instanceof UnauthorizedError ||
     error instanceof ValidationError
   ) {
     return error;
@@ -27,10 +27,15 @@ export const errorHandler = (error: GraphQLError) => {
     return new UserInputError('Validation Error', originalError);
   }
 
-  Logger.error(
-    error.message,
-    process.env.NODE_ENV === 'production' ? error.originalError : error,
-  );
+  // TypeORM -> findOneOrFail()
+  if (originalError instanceof EntityNotFoundError) {
+    return new UserInputError(originalError.message, {
+      error: { message: originalError.message, code: 'ENTITY_NOT_FOUND' },
+    });
+  }
+
+  Sentry.captureException(error);
+
   return process.env.NODE_ENV === 'production'
     ? new GraphQLError('Internal Server Error')
     : error;

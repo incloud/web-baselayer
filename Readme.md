@@ -6,7 +6,7 @@ With [Jest](https://jestjs.io/), the Boilerplate has already a Test-Framework in
 
 The default Database is PostgreSQL, but thanks to [TypeORM](http://typeorm.io/) almost any DB-System can be easily connected.
 
-[Lerna](https://lernajs.io/) is used as Package-Manager, so that Functionality can be shared between the Backend and a potential Frontend.
+[Lerna](https://lernajs.io/) is used as Package-Manager, so that functionality can be shared between the Backend and a potential Frontend.
 
 ## Used Libraries
 
@@ -34,7 +34,6 @@ The default Database is PostgreSQL, but thanks to [TypeORM](http://typeorm.io/) 
       - `loader` [DataLoaders](https://github.com/facebook/dataloader) for Batching and Caching DB-Requests
       - `module` GraphQL-Logic like resolvers, input-types etc.
       - `repository` custom TypeORM-Repositories
-      - `scalar` Custom Scalars for GraphQL
       - `service` Services for dependency injection
       - `util` Helper functions
 

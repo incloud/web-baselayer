@@ -1,6 +1,6 @@
 /**
  * An example how to integrate a custom data loader which works as a join layer inside the database
- * 
+ *
  * import DataLoader = require('dataloader');
  * import { getRepository } from 'typeorm';
  * import { User } from '../entity/User';

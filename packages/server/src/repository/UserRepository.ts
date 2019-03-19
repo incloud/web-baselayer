@@ -1,9 +1,5 @@
 import { Service } from 'typedi';
-import {
-  EntityRepository,
-  FindConditions,
-  Repository,
-} from 'typeorm';
+import { EntityRepository, FindConditions, Repository } from 'typeorm';
 import { User } from '../entity/User';
 import { RegisterInput } from '../module/auth/register/RegisterInput';
 import { hashPassword } from '../util/hashing';

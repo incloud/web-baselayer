@@ -17,6 +17,7 @@
     "@types/body-parser": "^1.17.0",
     "@types/ejs": "^2.6.3",
     "@types/express-jwt": "^0.0.41",
+    "@types/graphql": "^14.0.7",
     "@types/ioredis": "^4.0.6",
     "@types/jest": "^24.0.1",
     "@types/jsonwebtoken": "^8.3.0",

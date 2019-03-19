@@ -5,8 +5,7 @@ import DataLoader = require('dataloader');
 import { Maybe } from './helper';
 import { Role } from './roles';
 
-const loaders = () => ({
-});
+const loaders = () => ({});
 
 export interface IContext {
   userId: Maybe<string>;
@@ -19,8 +18,7 @@ export interface IContext {
 }
 
 export async function createContext({ req }: any): Promise<Context<IContext>> {
-  const { adminId = null, userId = null } =
-    req.user != null ? req.user : {};
+  const { adminId = null, userId = null } = req.user != null ? req.user : {};
 
   return {
     adminId,

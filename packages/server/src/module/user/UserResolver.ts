@@ -1,11 +1,4 @@
-import {
-  Arg,
-  Authorized,
-  Ctx,
-  Mutation,
-  Query,
-  Resolver,
-} from 'type-graphql';
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { User } from '../../entity/User';
 import { UserRepository } from '../../repository/UserRepository';

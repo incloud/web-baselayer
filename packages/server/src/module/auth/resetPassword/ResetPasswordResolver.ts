@@ -22,9 +22,7 @@ export class ResetPasswordResolver {
    * Creates a new random password for the user
    */
   @Mutation(() => Boolean)
-  async resetPassword(
-    @Arg('email') email: string,
-  ): Promise<boolean> {
+  async resetPassword(@Arg('email') email: string): Promise<boolean> {
     const user = await this.userRepository.findByEmail(email);
 
     // Just act as if we send the email => don't expose who is registered apart from registration itself

@@ -1,29 +1,29 @@
 # Readme
 
-This Boilerplate consists of a setup for a NodeJS-Graphql-Server written in Typescript. It contains a basic configuration for docker (with nginx), gitlab-ci and k8s. Basic User-Authentication through [JWT](https://jwt.io)-Tokens is already implemented.
+The purpose of this boilerplate is to show how a simple production-ready backend can be build using Node.js with TypeScript at Incloud. Therefore an HTTP interface for the query language GraphQL is provided which can be easily extended by adding project specific resolvers to it. It also contains a basic configuration for docker (with nginx in production), gitlab-ci and k8s examples. Basic user authentication with [JWT](https://jwt.io) is also implemented.
 
-With [Jest](https://jestjs.io/), the Boilerplate has already a Test-Framework integrated alongside with powerful helpers for GraphQL-Testing and examples for the existing code.
+You can add other Node.js services to this project using the package structure provided by [Lerna](https://lernajs.io/). This tool is used as a package manager, so that functionality can be shared between the backend, a potential frontend and other services. Therefore only one package.json is necessary.
 
-The default Database is PostgreSQL, but thanks to [TypeORM](http://typeorm.io/) almost any DB-System can be easily connected.
+The default database is PostgreSQL, but thanks to [TypeORM](http://typeorm.io/) almost any database system can be easily connected. Services to create and load fixtures are integrated within this boilerplate.
 
-[Lerna](https://lernajs.io/) is used as Package-Manager, so that functionality can be shared between the Backend and a potential Frontend.
+Testing is implemented using [Jest](https://jestjs.io/). This boilerplate already uses some basic test cases which are integrated alongside with some powerful helpers for testing GraphQL APIs and some more examples for the existing code.
 
 ## Used Libraries
 
-- [apollo-graphql](https://github.com/apollographql/apollo-server) as a base for graphql
-- [TypeORM](http://typeorm.io/) as ORM for the Database
-- [type-graphql](https://19majkel94.github.io/type-graphql/) for easy and leightweight Definition of Graphql-Resolvers and Types.
-- [type-di](https://github.com/typestack/typedi) for Dependency Injection of Services
-- [typeorm-fixtures](https://github.com/RobinCK/typeorm-fixtures) for easy generation of fixtures
-- [Jest](https://jestjs.io/) for testing.
-- [Lerna](https://lernajs.io/) for Package-Management
+- [apollo-graphql](https://github.com/apollographql/apollo-server) Base for the GraphQL API.
+- [TypeORM](http://typeorm.io/) ORM for the Database.
+- [type-graphql](https://19majkel94.github.io/type-graphql/) Easy and leightweight definition of GraphQL resolvers and types.
+- [type-di](https://github.com/typestack/typedi) Dependency injection of services.
+- [typeorm-fixtures](https://github.com/RobinCK/typeorm-fixtures) Easy generation of fixtures.
+- [Jest](https://jestjs.io/) Main testing framework - See testing section.
+- [Lerna](https://lernajs.io/) Management of multiple Node.js services within one project.
 
 ## Project Structure
 
-- `packages/` contains the different packages
+- `packages/` contains the different services
 
   - `common/` contains functions that can be shared between packages
-  - `server/` contains the GraphQL-Server and backend logic
+  - `server/` contains the GraphQL API and backend logic
 
     - `src/`
 
@@ -32,14 +32,15 @@ The default Database is PostgreSQL, but thanks to [TypeORM](http://typeorm.io/) 
       - `error` Custom errors
       - `fixture` TypeORM fixtures
       - `loader` [DataLoaders](https://github.com/facebook/dataloader) for Batching and Caching DB-Requests
-      - `module` GraphQL-Logic like resolvers, input-types etc. (Resolvers in this folder are automatically added to the Schema)
-      - `repository` custom TypeORM-Repositories
+      - `module` GraphQL logic like resolvers, input-types etc. (Resolvers in this folder are automatically added to the generale schema)
+      - `repository` custom TypeORM repositories
+      - `scalar` Custom scalars for GraphQL
       - `service` Services for dependency injection
       - `util` Helper functions
 
     - `test/`
-      - `functional` Jest Test-Files.
-      - `helper.ts` A Test-Helper that inits the DB etc. for tests and offers methods for accessing the Graphql-API of the server.
+      - `functional` Jest test files.
+      - `helper.ts` A test helper that inits the DB etc. for tests and provides methods for accessing the GraphQL API of the server.
       - `util.ts` Contains methods often used by tests
 
 ## Setup

@@ -1,7 +1,7 @@
 import { IProcessor } from 'typeorm-fixtures-cli';
-import { User } from '../entity/User';
-import { Gender } from '../enum/Gender';
-import { hashPassword } from '../util/hashing';
+import { User } from '../../entity/User';
+import { Gender } from '../../enum/Gender';
+import { hashPassword } from '../../util/hashing';
 
 export default class UserProcessor implements IProcessor<User> {
   // tslint:disable-next-line:variable-name

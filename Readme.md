@@ -32,7 +32,7 @@ The default Database is PostgreSQL, but thanks to [TypeORM](http://typeorm.io/) 
       - `error` Custom errors
       - `fixture` TypeORM fixtures
       - `loader` [DataLoaders](https://github.com/facebook/dataloader) for Batching and Caching DB-Requests
-      - `module` GraphQL-Logic like resolvers, input-types etc.
+      - `module` GraphQL-Logic like resolvers, input-types etc. (Resolvers in this folder are automatically added to the Schema)
       - `repository` custom TypeORM-Repositories
       - `service` Services for dependency injection
       - `util` Helper functions
@@ -72,15 +72,22 @@ You need to have `docker` and `docker-compose` installed on your computer.
 ## Testing
 
 - To be able to run a test against a custom 'test'-database follow these steps:
+
   - Create the Database as following:
+
   ```
    docker-compose exec db sh
    psql --user toolsharing
    CREATE DATABASE <DB_NAME>;
   ```
+
   - Set `TEST_DB_NAME` to the newly created Database in your local .env-file.
 
-* TODO: Helper-Example?
+- The Helper class offers two basic methods to access the graphQL-Schema:
+  - `query(query, variables)`
+  - `mutate(query, variables)`
+- With `resetDatabase()` the Database is cleared and the fixtures are loaded.
+  - Be aware, that this method is already invoked by the Helper´s `init()`-Method.
 
 ## Frequently Used Commands
 

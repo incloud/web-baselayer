@@ -4,6 +4,7 @@
  * import DataLoader = require('dataloader');
  * import { getRepository } from 'typeorm';
  * import { User } from '../entity/User';
+ * import { mapData } from './util';
  *
  * export function fooByUserLoader() {
  *   return new DataLoader(async (ids: string[]) => {
@@ -13,7 +14,12 @@
  *       .where('user.id IN (:...ids)', { ids })
  *       .getMany();
  *
- *     return usersWithFoo.map(user => user.foo!);
- *   });
+ *    return mapData(
+ *      ids,
+ *      usersWithFoo,
+ *      user => user.id,
+ *      user => user.foo!,
+ *      () => null,
+ *    );
  * }
  */

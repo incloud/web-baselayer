@@ -32,6 +32,7 @@ services:
       - redis
     ports:
       - '4000:4000'
+      - '9229:9229'
     volumes:
       - '.:/var/app'
 

@@ -1,5 +1,20 @@
-const prefix = path =>
-  `${process.env.NODE_ENV === 'production' ? 'dist' : 'src'}/${path}`;
+const prefix = path => {
+  let prefix = null;
+  switch (process.env.NODE_ENV) {
+    // ts-jest registers ts-node
+    case 'test':
+      prefix = 'src';
+      break;
+    // development uses tsc-watch now
+    case 'development':
+    case 'production':
+    default:
+      prefix = 'dist';
+      break;
+  }
+
+  return `${prefix}/${path}`;
+};
 
 module.exports = {
   name: 'default',

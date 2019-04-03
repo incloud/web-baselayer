@@ -5,10 +5,10 @@
  * The data at index `n` in the result array should
  * be that corresponding to the id at the same index `n`
  * within the input array.
- * 
+ *
  * Simply returning the result of the database query
  * would not always respect this.
- * 
+ *
  * @param ids Input array given by dataloader
  * @param rawData Result of the database query
  * @param getId Getter that returns the id of an item of rawData

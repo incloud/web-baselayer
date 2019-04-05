@@ -16,3 +16,5 @@ export const getFlag = (
   }
   return false;
 };
+
+export const isProduction = () => process.env.NODE_ENV === 'production';

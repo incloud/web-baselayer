@@ -4,34 +4,41 @@ require('dotenv-safe').config();
 
 import * as Sentry from '@sentry/node';
 import { ApolloServer } from 'apollo-server-express';
+import { json, urlencoded } from 'body-parser';
 import express = require('express');
-import { GraphQLError } from 'graphql';
+import { ErrorRequestHandler } from 'express';
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
 import { useContainer } from 'typeorm';
 import { authChecker } from './util/authChecker';
 import { createContext } from './util/context';
 import { createDatabaseConnection } from './util/createDatabaseConnection';
-import { getFlag } from './util/environment';
+import { getFlag, isProduction } from './util/environment';
 import { errorHandler } from './util/errorHandler';
 import { setupPassport } from './util/setupPassport';
 
 useContainer(Container);
 
-Sentry.init({
-  dsn: process.env.SENTRY_DSN,
-  level: 'warn',
-  patchGlobal: true,
-  tags: { source: 'server' },
-});
+if (isProduction()) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    level: 'warn',
+    patchGlobal: true,
+    tags: { source: 'server' },
+  });
+}
 
 const startServer = async () => {
   await createDatabaseConnection();
 
   const app = express();
+  app.use(urlencoded({ extended: true }), json());
+  if (isProduction()) {
+    app.use(Sentry.Handlers.requestHandler() as express.RequestHandler);
+  }
   const server = new ApolloServer({
     context: createContext,
-    formatError: (err: GraphQLError) => errorHandler(err, Sentry),
+    formatError: errorHandler,
     introspection: getFlag(true, false, 'ENABLE_INTROSPECTION'),
     playground: getFlag(true, false, 'ENABLE_PLAYGROUND'),
     schema: await buildSchema({
@@ -45,21 +52,32 @@ const startServer = async () => {
   setupPassport(app);
   server.applyMiddleware({ app, cors: false });
 
+  // Catch global Errors
+  if (isProduction()) {
+    app.use(Sentry.Handlers.errorHandler() as express.ErrorRequestHandler);
+  }
+
+  const errorRequestHandler: ErrorRequestHandler = (err, _, res, next) => {
+    if (err != null) {
+      const errorId = (res as any).sentry;
+      return res
+        .status(500)
+        .send(
+          `Internal Error: ${
+            errorId != null ? errorId : 'error was not tracked'
+          }`,
+        );
+    }
+    return next();
+  };
+  app.use(errorRequestHandler);
+
   app.listen({ port: 4000 }, () =>
     // tslint:disable-next-line:no-console
     console.log(
       `🚀 Server ready at http://localhost:4000${server.graphqlPath}`,
     ),
   );
-
-  // Catch global Errors
-  app.use((error: any, _: any, res: any, next: any) => {
-    if (error && process.env.NODE_ENV === 'production') {
-      Sentry.captureException(error);
-      return res.status(500).send(new Error('Internal Server Error'));
-    }
-    next(error);
-  });
 };
 
 startServer();

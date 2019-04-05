@@ -1,3 +1,5 @@
+import { isProduction } from './environment';
+
 interface IQueryParameters {
   [key: string]: string;
 }
@@ -19,8 +21,7 @@ export function createLink(
     )
     .join('&');
 
-  const isProd = process.env.NODE_ENV === 'production';
-  return `http${isProd ? 's' : ''}://${process.env.HOST}${path}${
+  return `http${isProduction() ? 's' : ''}://${process.env.HOST}${path}${
     queryString.length > 0 ? `?${queryString}` : ''
   }`;
 }

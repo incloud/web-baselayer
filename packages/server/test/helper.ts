@@ -49,7 +49,7 @@ export class Helper {
     this.app = express();
     const server = new ApolloServer({
       context: this.createContext,
-      formatError: (err: GraphQLError) => errorHandler(err, Sentry),
+      formatError: errorHandler,
       schema: buildSchemaSync({
         authChecker,
         container: Container,

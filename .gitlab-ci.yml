@@ -72,21 +72,57 @@ test:jest-server:
   tags:
     - docker
 
-# .deploy:kubernetes: &deployKubernetesTemplate
-#   stage: deploy
-#   image: docker.incloud.zone/incloud/kubernetes/kube-deploy:v1.10.5
-#   when: manual
-#   tags:
-#     - docker
+.deploy:kubernetes: &deployKubernetesTemplate
+  stage: deploy
+  image: docker.incloud.zone/incloud/kubernetes/kube-deploy:v1.10.5
+  when: manual
+  tags:
+    - docker
 
-# .deploy:kubernetes:stop: &deployKubernetesStopTemplate
-#   stage: deploy
-#   image: docker.incloud.zone/incloud/kubernetes/kube-deploy:v1.10.5
-#   when: manual
-#   script:
-#     - .kubernetes/delete_deployments.sh
-#   tags:
-#     - docker
+.deploy:kubernetes:stop: &deployKubernetesStopTemplate
+  stage: deploy
+  image: docker.incloud.zone/incloud/kubernetes/kube-deploy:v1.10.5
+  when: manual
+  script:
+    - .kubernetes/delete_deployments.sh
+  tags:
+    - docker
+
+deploy:master:
+  <<: *deployKubernetesTemplate
+  when: manual
+  script:
+    - .kubernetes/deploy.sh
+    - .kubernetes/schema-update.sh
+  variables:
+    KUBE_NAMESPACE: ${KUBE_NAME}
+    NGINX_HOST: ${KUBE_NAME}.k8s.incloud.de
+    DROP_SCHEMA: 'true'
+    LOAD_FIXTURES: 'true'
+    PRIVATE_KEY_BASE64: $PRIVATE_KEY_BASE64_DEVELOP
+    PUBLIC_KEY_BASE64: $PUBLIC_KEY_BASE64_DEVELOP
+    SENTRY_DSN: $SENTRY_DSN
+    MAILER_HOST: $MAILER_HOST_DEVELOP
+    MAILER_PORT: $MAILER_PORT_DEVELOP
+    MAILER_USER: $MAILER_USER_DEVELOP
+    MAILER_PASSWORD: $MAILER_PASSWORD_DEVELOP
+    MAILER_FROM: $MAILER_FROM_DEVELOP
+  environment:
+    name: master
+    url: https://$NGINX_HOST
+    on_stop: deploy:master:stop
+  only:
+    - master
+
+deploy:master:stop:
+  <<: *deployKubernetesStopTemplate
+  variables:
+    KUBE_NAMESPACE: ${KUBE_NAME}
+  environment:
+    name: master
+    action: stop
+  only:
+    - master
 
 # deploy:develop:
 #   <<: *deployKubernetesTemplate

@@ -47,9 +47,10 @@ describe('changePassword', () => {
     expect(result.errors).toBeDefined();
     expect(result.errors).toHaveLength(1);
     expect(result.errors![0].message).toContain('Validation Error');
-    expect((result.errors![0] as any).validationErrors[0].property).toEqual(
-      'newPassword',
-    );
+    expect(
+      (result.errors![0] as any).extensions.exception.validationErrors[0]
+        .property,
+    ).toEqual('newPassword');
   });
 
   it('changePassword should set new password if passwords match', async () => {

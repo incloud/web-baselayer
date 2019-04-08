@@ -7,7 +7,7 @@ import { createTestClient } from 'apollo-server-testing';
 import deepmerge = require('deepmerge');
 import { Express } from 'express';
 import express = require('express');
-import { DocumentNode, ExecutionResult, GraphQLError } from 'graphql';
+import { DocumentNode, ExecutionResult } from 'graphql';
 import 'jest';
 import { buildSchemaSync } from 'type-graphql';
 import { Container } from 'typedi';

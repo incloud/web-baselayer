@@ -9,6 +9,7 @@
     "watch": "lerna run watch --stream",
     "test": "lerna run test --stream",
     "lint": "lerna run lint --stream",
+    "clean": "lerna clean && lerna run clean --stream",
     "lerna": "lerna"
   },
   "devDependencies": {

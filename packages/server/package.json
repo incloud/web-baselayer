@@ -5,13 +5,14 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "tsc -b ../common .",
-    "start": "tsc-watch --outDir ./dist --onSuccess 'node --inspect=0.0.0.0:9229 ./dist/index.js'",
+    "build": "yarn clean; tsc -b ../common .",
+    "start": "yarn clean; tsc-watch --outDir ./dist --onSuccess 'node --inspect=0.0.0.0:9229 ./dist/index.js'",
     "lint": "tslint --project .",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js",
     "fixtures": "ts-node ./node_modules/typeorm-fixtures-cli/dist/cli.js ./src/fixture --config ormconfig.js --sync",
     "test": "NODE_ENV=test jest --verbose --coverage --forceExit --runInBand",
-    "test:ci": "NODE_ENV=test jest --verbose --coverage --ci --forceExit --detectOpenHandles --runInBand"
+    "test:ci": "NODE_ENV=test jest --verbose --coverage --ci --forceExit --detectOpenHandles --runInBand",
+    "clean": "rimraf ./dist"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
@@ -61,6 +62,7 @@
     "passport-jwt": "^4.0.0",
     "pg": "^7.8.0",
     "reflect-metadata": "^0.1.13",
+    "rimraf": "^2.6.3",
     "type-graphql": "^0.17.0",
     "typedi": "^0.8.0",
     "typeorm": "^0.2.12",

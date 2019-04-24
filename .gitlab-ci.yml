@@ -95,7 +95,7 @@ deploy:master:
     - .kubernetes/deploy.sh
     - .kubernetes/schema-update.sh
   variables:
-    KUBE_NAMESPACE: ${KUBE_NAME}
+    KUBE_NAMESPACE: ${KUBE_NAME}-master
     NGINX_HOST: ${KUBE_NAME}.k8s.incloud.de
     DROP_SCHEMA: 'true'
     LOAD_FIXTURES: 'true'

@@ -117,7 +117,7 @@ deploy:master:
 deploy:master:stop:
   <<: *deployKubernetesStopTemplate
   variables:
-    KUBE_NAMESPACE: ${KUBE_NAME}
+    KUBE_NAMESPACE: ${KUBE_NAME}-master
   environment:
     name: master
     action: stop

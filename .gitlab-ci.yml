@@ -18,6 +18,7 @@ variables:
 stages:
   - build
   - test
+  - emit
   - deploy
 
 build:
@@ -78,6 +79,21 @@ test:jest-server:
   when: manual
   tags:
     - docker
+
+emit:emit-schema:
+  image: $IMAGE_TAG_SERVER
+  stage: emit
+  allow_failure: false
+  script: 
+    - cd /var/app/packages/server
+    - yarn run emitSchema
+  after_script:
+    - mv /var/app/packages/server/schema.json $CI_PROJECT_DIR
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - schema.json
 
 .deploy:kubernetes:stop: &deployKubernetesStopTemplate
   stage: deploy

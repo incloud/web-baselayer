@@ -12,6 +12,7 @@
     "fixtures": "ts-node ./node_modules/typeorm-fixtures-cli/dist/cli.js ./src/fixture --config ormconfig.js --sync",
     "test": "NODE_ENV=test jest --verbose --coverage --forceExit --runInBand",
     "test:ci": "NODE_ENV=test jest --verbose --coverage --ci --forceExit --detectOpenHandles --runInBand",
+    "emitSchema": "ts-node src/emitSchema.ts",
     "clean": "rimraf ./dist"
   },
   "devDependencies": {

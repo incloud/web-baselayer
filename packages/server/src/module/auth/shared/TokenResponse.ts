@@ -1,7 +1,8 @@
 import { Field, ObjectType } from 'type-graphql';
+import { ITokenResponse } from './ITokenResponse';
 
-@ObjectType()
-export class TokenResponse {
+@ObjectType({ implements: ITokenResponse })
+export class TokenResponse implements ITokenResponse {
   @Field()
   accessToken: string;
 

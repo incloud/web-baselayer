@@ -1,4 +1,5 @@
 import { AuthService } from './../src/service/AuthSerivce/index';
+const cookieParser = require('cookie-parser');
 import { authChecker } from '@baselayer/server/src/util/authChecker';
 import { createDatabaseConnection } from '@baselayer/server/src/util/createDatabaseConnection';
 import * as Sentry from '@sentry/node';
@@ -57,6 +58,7 @@ export class Helper {
       }),
     });
 
+    this.app.use(cookieParser());
     this.app.set('trust proxy', 1);
 
     const auth = Container.get(AuthService);
@@ -111,6 +113,10 @@ export class Helper {
     const context = deepmerge(this.context, {
       req: {
         app: this.app,
+      },
+      res: {
+        // tslint:disable-next-line:variable-name
+        cookie: (_name: string, _value: string, _options: any) => {},
       },
     });
     return createContext(context);

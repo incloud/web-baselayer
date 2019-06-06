@@ -4,7 +4,6 @@ import { Service } from 'typedi';
 @Service()
 export class CookieService {
   setCookie(accessToken: string, refreshToken: string, res: Response) {
-    // check if client sent cookie
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
       maxAge: parseInt(process.env.ACCESS_TOKEN_EXPIRY_TIME!, 10) * 1000,

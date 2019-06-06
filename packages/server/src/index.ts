@@ -1,21 +1,22 @@
 import 'reflect-metadata';
 // tslint:disable-next-line:no-var-requires
 require('dotenv-safe').config();
+const cookieParser = require('cookie-parser');
 
 import * as Sentry from '@sentry/node';
 import { ApolloServer } from 'apollo-server-express';
 import { json, urlencoded } from 'body-parser';
-import express = require('express');
 import { ErrorRequestHandler } from 'express';
+import express = require('express');
 import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
 import { useContainer } from 'typeorm';
+import { AuthService } from './service/AuthSerivce';
 import { authChecker } from './util/authChecker';
 import { createContext } from './util/context';
 import { createDatabaseConnection } from './util/createDatabaseConnection';
 import { getFlag, isProduction } from './util/environment';
 import { errorHandler } from './util/errorHandler';
-import { setupPassport } from './util/setupPassport';
 
 useContainer(Container);
 
@@ -33,6 +34,7 @@ const startServer = async () => {
 
   const app = express();
   app.use(urlencoded({ extended: true }), json());
+  app.use(cookieParser());
   if (isProduction()) {
     app.use(Sentry.Handlers.requestHandler() as express.RequestHandler);
   }
@@ -49,7 +51,8 @@ const startServer = async () => {
   });
 
   app.set('trust proxy', 1);
-  setupPassport(app);
+  const auth = Container.get(AuthService);
+  auth.setupPassport(app);
   server.applyMiddleware({ app, cors: false });
 
   // Catch global Errors

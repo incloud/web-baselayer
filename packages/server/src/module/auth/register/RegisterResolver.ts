@@ -1,12 +1,14 @@
 import { AuthenticationError } from 'apollo-server-core';
 import { plainToClass } from 'class-transformer';
-import { Arg, Mutation, Resolver } from 'type-graphql';
+import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 import { InjectRepository } from 'typeorm-typedi-extensions';
 import { UserRepository } from '../../../repository/UserRepository';
 import { AccessTokenService } from '../../../service/AccessTokenService';
 import { RefreshTokenService } from '../../../service/RefreshTokenService';
 import { AuthResponse } from '../shared/AuthResponse';
+import { CookieService } from './../../../service/CookieService';
+import { IContext } from './../../../util/context';
 import { RegisterInput } from './RegisterInput';
 
 @Service()
@@ -19,9 +21,12 @@ export class RegisterResolver {
   private readonly accessTokenService: AccessTokenService;
   @Inject()
   private readonly refreshTokenService: RefreshTokenService;
+  @Inject()
+  private readonly cookieService: CookieService;
 
   @Mutation(() => AuthResponse, { nullable: false })
   async register(
+    @Ctx() ctx: IContext,
     @Arg('input') registerInput: RegisterInput,
   ): Promise<AuthResponse> {
     const alreadyRegisteredEmailUser = await this.userRepository.findByEmail(
@@ -38,6 +43,7 @@ export class RegisterResolver {
       user,
     );
     const accessToken = await this.accessTokenService.createAccessToken(user);
+    this.cookieService.setCookie(accessToken, refreshToken, ctx.res);
 
     return plainToClass(AuthResponse, {
       accessToken,

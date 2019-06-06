@@ -1,0 +1,17 @@
+schema: http://localhost:4000/graphql
+documents: ./src/graphql/**/*.{ts,tsx}
+overwrite: true
+generates:
+  ./src/components/apollo-components.tsx:
+    config:
+      noNamespaces: true
+      withHooks: true
+      withComponent: false
+      scalars:
+        DateTime: Date
+    plugins:
+      - add: '// THIS IS A GENERATED FILE, DO NOT EDIT IT!'
+      - add: '// tslint:disable'
+      - typescript
+      - typescript-operations
+      - typescript-react-apollo

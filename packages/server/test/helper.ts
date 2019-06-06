@@ -1,6 +1,6 @@
+import { AuthService } from './../src/service/AuthSerivce/index';
 import { authChecker } from '@baselayer/server/src/util/authChecker';
 import { createDatabaseConnection } from '@baselayer/server/src/util/createDatabaseConnection';
-import { setupPassport } from '@baselayer/server/src/util/setupPassport';
 import * as Sentry from '@sentry/node';
 import { ApolloServer } from 'apollo-server-express';
 import { createTestClient } from 'apollo-server-testing';
@@ -58,7 +58,9 @@ export class Helper {
     });
 
     this.app.set('trust proxy', 1);
-    setupPassport(this.app);
+
+    const auth = Container.get(AuthService);
+    auth.setupPassport(this.app);
     server.applyMiddleware({ app: this.app, cors: false });
 
     this.client = createTestClient(server);

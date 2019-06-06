@@ -10,6 +10,7 @@ import { IContext } from '../../../util/context';
 import { hashPassword, verifyPassword } from '../../../util/hashing';
 import { Role } from '../../../util/roles';
 import { AuthResponse } from '../shared/AuthResponse';
+import { CookieService } from './../../../service/CookieService';
 import { ChangePasswordInput } from './ChangePasswordInput';
 
 @Resolver()
@@ -22,6 +23,9 @@ export class ChangePasswordResolver {
 
   @Inject()
   private readonly accessTokenService: AccessTokenService;
+
+  @Inject()
+  private readonly cookieService: CookieService;
 
   @Authorized<Role>(Role.USER)
   @Mutation(() => AuthResponse)
@@ -50,6 +54,7 @@ export class ChangePasswordResolver {
     const refreshToken = await this.refreshTokenService.createRefreshToken(
       user,
     );
+    this.cookieService.setCookie(accessToken, refreshToken, ctx.res);
 
     return plainToClass(AuthResponse, {
       accessToken,

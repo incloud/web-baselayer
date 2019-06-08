@@ -1,11 +1,11 @@
 import React, { FunctionComponent } from 'react';
 import { ApolloProvider } from 'react-apollo-hooks';
 import { Router } from 'react-router-dom';
+import { Baselayer } from './Baselayer';
 import { FullscreenSpinner } from './components/FullscreenSpinner';
 import { GlobalStyle } from './GlobalStyle';
 import { useBootstrapApplication } from './hooks/useBootstrapApplication';
 import { theme, ThemeProvider } from './theme';
-import { LoginPage } from './pages/LoginPage';
 
 export const App: FunctionComponent<{}> = () => {
   const { client, history } = useBootstrapApplication();
@@ -20,7 +20,7 @@ export const App: FunctionComponent<{}> = () => {
         <GlobalStyle />
         <ApolloProvider client={client}>
           <Router history={history}>
-            <LoginPage />
+            <Baselayer />
           </Router>
         </ApolloProvider>
       </>

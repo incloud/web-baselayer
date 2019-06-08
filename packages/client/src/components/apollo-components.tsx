@@ -53,11 +53,17 @@ export type LoginInput = {
   password: Scalars['String'];
 };
 
+export type LogoutResponse = {
+  __typename?: 'LogoutResponse';
+  success: Scalars['Boolean'];
+};
+
 export type Mutation = {
   __typename?: 'Mutation';
   changePassword: AuthResponse;
   login: AuthResponse;
   refreshTokens: AuthResponse;
+  logout: LogoutResponse;
   register: AuthResponse;
   resetPassword: Scalars['Boolean'];
   updateMe: User;
@@ -144,6 +150,12 @@ export type LoginMutation = { __typename?: 'Mutation' } & {
     };
 };
 
+export type LogoutMutationVariables = {};
+
+export type LogoutMutation = { __typename?: 'Mutation' } & {
+  logout: { __typename?: 'LogoutResponse' } & Pick<LogoutResponse, 'success'>;
+};
+
 export type RefreshTokenMutationMutationVariables = {
   refreshToken: Scalars['String'];
 };
@@ -153,6 +165,32 @@ export type RefreshTokenMutationMutation = { __typename?: 'Mutation' } & {
     AuthResponse,
     'accessToken' | 'refreshToken'
   >;
+};
+
+export type RegisterMutationVariables = {
+  email: Scalars['String'];
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  phoneNumber: Scalars['String'];
+  birthYear: Scalars['Int'];
+  gender: Gender;
+  password: Scalars['String'];
+  acceptedTermsAndConditions: Scalars['Boolean'];
+};
+
+export type RegisterMutation = { __typename?: 'Mutation' } & {
+  register: { __typename?: 'AuthResponse' } & {
+    user: { __typename?: 'User' } & Pick<
+      User,
+      | 'id'
+      | 'email'
+      | 'firstName'
+      | 'lastName'
+      | 'phoneNumber'
+      | 'birthYear'
+      | 'gender'
+    >;
+  };
 };
 
 export type MeQueryVariables = {};
@@ -213,6 +251,51 @@ export function useLoginMutation(
     baseOptions,
   );
 }
+export const LogoutDocument = gql`
+  mutation logout {
+    logout {
+      success
+    }
+  }
+`;
+export type LogoutMutationFn = ReactApollo.MutationFn<
+  LogoutMutation,
+  LogoutMutationVariables
+>;
+export type LogoutProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<LogoutMutation, LogoutMutationVariables>
+> &
+  TChildProps;
+export function withLogout<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    LogoutMutation,
+    LogoutMutationVariables,
+    LogoutProps<TChildProps>
+  >,
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    LogoutMutation,
+    LogoutMutationVariables,
+    LogoutProps<TChildProps>
+  >(LogoutDocument, {
+    alias: 'withLogout',
+    ...operationOptions,
+  });
+}
+
+export function useLogoutMutation(
+  baseOptions?: ReactApolloHooks.MutationHookOptions<
+    LogoutMutation,
+    LogoutMutationVariables
+  >,
+) {
+  return ReactApolloHooks.useMutation<LogoutMutation, LogoutMutationVariables>(
+    LogoutDocument,
+    baseOptions,
+  );
+}
 export const RefreshTokenMutationDocument = gql`
   mutation refreshTokenMutation($refreshToken: String!) {
     refreshTokens(refreshToken: $refreshToken) {
@@ -261,6 +344,79 @@ export function useRefreshTokenMutationMutation(
     RefreshTokenMutationMutation,
     RefreshTokenMutationMutationVariables
   >(RefreshTokenMutationDocument, baseOptions);
+}
+export const RegisterDocument = gql`
+  mutation register(
+    $email: String!
+    $firstName: String!
+    $lastName: String!
+    $phoneNumber: String!
+    $birthYear: Int!
+    $gender: Gender!
+    $password: String!
+    $acceptedTermsAndConditions: Boolean!
+  ) {
+    register(
+      input: {
+        email: $email
+        firstName: $firstName
+        lastName: $lastName
+        phoneNumber: $phoneNumber
+        birthYear: $birthYear
+        gender: $gender
+        password: $password
+        acceptedTermsAndConditions: $acceptedTermsAndConditions
+      }
+    ) {
+      user {
+        id
+        email
+        firstName
+        lastName
+        phoneNumber
+        birthYear
+        gender
+      }
+    }
+  }
+`;
+export type RegisterMutationFn = ReactApollo.MutationFn<
+  RegisterMutation,
+  RegisterMutationVariables
+>;
+export type RegisterProps<TChildProps = {}> = Partial<
+  ReactApollo.MutateProps<RegisterMutation, RegisterMutationVariables>
+> &
+  TChildProps;
+export function withRegister<TProps, TChildProps = {}>(
+  operationOptions?: ReactApollo.OperationOption<
+    TProps,
+    RegisterMutation,
+    RegisterMutationVariables,
+    RegisterProps<TChildProps>
+  >,
+) {
+  return ReactApollo.withMutation<
+    TProps,
+    RegisterMutation,
+    RegisterMutationVariables,
+    RegisterProps<TChildProps>
+  >(RegisterDocument, {
+    alias: 'withRegister',
+    ...operationOptions,
+  });
+}
+
+export function useRegisterMutation(
+  baseOptions?: ReactApolloHooks.MutationHookOptions<
+    RegisterMutation,
+    RegisterMutationVariables
+  >,
+) {
+  return ReactApolloHooks.useMutation<
+    RegisterMutation,
+    RegisterMutationVariables
+  >(RegisterDocument, baseOptions);
 }
 export const MeDocument = gql`
   query me {

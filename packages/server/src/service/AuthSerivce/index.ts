@@ -66,6 +66,10 @@ export class AuthService {
     return { user, refreshToken, accessToken };
   }
 
+  async logout(res: Response) {
+    this.cookieService.unsetCookie(res);
+  }
+
   setupPassport(app: Express) {
     use(cookieJwtStrategy());
     initialize();

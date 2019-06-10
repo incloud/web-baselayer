@@ -14,4 +14,8 @@ export class CookieService {
       maxAge: parseInt(process.env.REFRESH_TOKEN_EXPIRY_TIME!, 10) * 1000,
     });
   }
+  unsetCookie(res: Response) {
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+  }
 }

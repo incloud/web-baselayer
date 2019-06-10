@@ -20,12 +20,11 @@ const LOGIN_ERROR_MESSAGE = 'Invalid email or password!';
 
 @Service()
 export class AuthService {
-  @Inject()
-  private readonly cookieService: CookieService;
-
   @InjectRepository()
   private readonly userRepository: UserRepository;
 
+  @Inject()
+  private readonly cookieService: CookieService;
   @Inject()
   private readonly accessTokenService: AccessTokenService;
   @Inject()

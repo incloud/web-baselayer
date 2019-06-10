@@ -1,10 +1,10 @@
 // Colors
 export const blue6 = '#1890ff';
-export const purple6 = '#722ed1';
+export const purple6 = '#214F75';
 export const cyan6 = '#13c2c2';
 export const green6 = '#52c41a';
 export const magenta6 = '#eb2f96';
-export const red6 = '#f5222d';
+export const red6 = '#ff9e4a';
 export const orange6 = '#fa8c16';
 export const yellow6 = '#fadb14';
 export const volcano6 = '#fa541c';
@@ -13,7 +13,7 @@ export const lime6 = '#a0d911';
 export const gold6 = '#faad14';
 
 // Theme colors
-export const primaryColor = '#f37a1f';
+export const primaryColor = '#214F75';
 export const infoColor = blue6;
 export const successColor = green6;
 export const processingColor = blue6;

@@ -6,6 +6,7 @@ import { gql } from 'apollo-server-core';
 import 'jest';
 import { Helper } from '../helper';
 import { extractTokenData, loginMutation } from '../util';
+import console = require('console');
 
 describe('login', () => {
   const helper = new Helper();

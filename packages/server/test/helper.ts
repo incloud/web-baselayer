@@ -29,10 +29,11 @@ interface IInitHooks {
 }
 
 export class Helper {
-  private dbConnection: Connection;
-  private client: any;
-  private app: Express | null;
+  public server: ApolloServer;
+  public client: any;
   private context: any;
+  private dbConnection: Connection;
+  private app: Express | null;
 
   public async init({ updateContainer }: IInitHooks = {}): Promise<void> {
     jest.setTimeout(10000);
@@ -48,7 +49,7 @@ export class Helper {
 
     this.context = await this.getAuthorizedContext();
     this.app = express();
-    const server = new ApolloServer({
+    this.server = new ApolloServer({
       context: this.createContext,
       formatError: errorHandler,
       schema: buildSchemaSync({
@@ -63,9 +64,9 @@ export class Helper {
 
     const auth = Container.get(AuthService);
     auth.setupPassport(this.app);
-    server.applyMiddleware({ app: this.app, cors: false });
+    this.server.applyMiddleware({ app: this.app, cors: false });
 
-    this.client = createTestClient(server);
+    this.client = createTestClient(this.server);
   }
 
   public async query(
@@ -116,7 +117,7 @@ export class Helper {
       },
       res: {
         // tslint:disable-next-line:variable-name
-        cookie: (_name: string, _value: string, _options: any) => {},
+        cookie: jest.fn(),
       },
     });
     return createContext(context);

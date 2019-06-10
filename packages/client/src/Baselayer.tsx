@@ -35,7 +35,7 @@ const BaselayerCmp: FC<RouteComponentProps> = ({ history }) => {
 
   useEffect(() => {
     const pathName =
-      history.location.pathname === '/' ? '/drinks' : history.location.pathname;
+      history.location.pathname === '/' ? '/home' : history.location.pathname;
     history.replace(isLoggedIn ? pathName : '/auth/login');
   }, [isLoggedIn]);
 

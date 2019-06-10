@@ -7,12 +7,12 @@ import { fromBase64 } from '../../util/base64';
 
 export const cookieJwtStrategy = () => {
   const jwtFromRequest: JwtFromRequestFunction = req => {
-    if (req.cookies && req.cookies.accessToken) {
-      return req.cookies.accessToken;
-    }
     const bearer = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
     if (bearer) {
       return bearer;
+    }
+    if (req.cookies && req.cookies.accessToken) {
+      return req.cookies.accessToken;
     }
     return null;
   };

@@ -36,6 +36,15 @@ services:
     volumes:
       - '.:/var/app'
 
+  client:
+    image: node:10.15
+    working_dir: /var/app
+    command: yarn run start --scope=@baselayer/client
+    ports:
+      - '3000:3000'
+    volumes:
+      - '.:/var/app'
+
   node:
     image: node:10.15
     working_dir: /var/app

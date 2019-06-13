@@ -1,6 +1,7 @@
+import { AuthService } from './../src/service/AuthSerivce/index';
+const cookieParser = require('cookie-parser');
 import { authChecker } from '@baselayer/server/src/util/authChecker';
 import { createDatabaseConnection } from '@baselayer/server/src/util/createDatabaseConnection';
-import { setupPassport } from '@baselayer/server/src/util/setupPassport';
 import * as Sentry from '@sentry/node';
 import { ApolloServer } from 'apollo-server-express';
 import { createTestClient } from 'apollo-server-testing';
@@ -28,10 +29,11 @@ interface IInitHooks {
 }
 
 export class Helper {
-  private dbConnection: Connection;
-  private client: any;
-  private app: Express | null;
+  public server: ApolloServer;
+  public client: any;
   private context: any;
+  private dbConnection: Connection;
+  private app: Express | null;
 
   public async init({ updateContainer }: IInitHooks = {}): Promise<void> {
     jest.setTimeout(10000);
@@ -47,7 +49,7 @@ export class Helper {
 
     this.context = await this.getAuthorizedContext();
     this.app = express();
-    const server = new ApolloServer({
+    this.server = new ApolloServer({
       context: this.createContext,
       formatError: errorHandler,
       schema: buildSchemaSync({
@@ -57,11 +59,14 @@ export class Helper {
       }),
     });
 
+    this.app.use(cookieParser());
     this.app.set('trust proxy', 1);
-    setupPassport(this.app);
-    server.applyMiddleware({ app: this.app, cors: false });
 
-    this.client = createTestClient(server);
+    const auth = Container.get(AuthService);
+    auth.setupPassport(this.app);
+    this.server.applyMiddleware({ app: this.app, cors: false });
+
+    this.client = createTestClient(this.server);
   }
 
   public async query(
@@ -109,6 +114,10 @@ export class Helper {
     const context = deepmerge(this.context, {
       req: {
         app: this.app,
+      },
+      res: {
+        // tslint:disable-next-line:variable-name
+        cookie: jest.fn(),
       },
     });
     return createContext(context);

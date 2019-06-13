@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.0",
+    "@types/cookie-parser": "^1.4.1",
     "@types/ejs": "^2.6.3",
     "@types/express-jwt": "^0.0.41",
     "@types/graphql": "^14.0.7",
@@ -49,6 +50,7 @@
     "body-parser": "^1.18.3",
     "class-transformer": "^0.2.0",
     "class-validator": "^0.9.1",
+    "cookie-parser": "^1.4.4",
     "dataloader": "^1.4.0",
     "dotenv-safe": "^6.1.0",
     "express": "^4.16.4",
@@ -60,6 +62,7 @@
     "jwks-rsa": "^1.4.0",
     "nodemailer": "^5.1.1",
     "passport": "^0.4.0",
+    "passport-cookie": "^1.0.6",
     "passport-jwt": "^4.0.0",
     "pg": "^7.8.0",
     "reflect-metadata": "^0.1.13",

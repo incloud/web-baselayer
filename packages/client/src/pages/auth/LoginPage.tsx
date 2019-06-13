@@ -1,22 +1,19 @@
 import { Form, Input, SubmitButton } from '@jbuschke/formik-antd';
 import { Icon } from 'antd';
-import { Formik, FormikProps, FormikActions } from 'formik';
+import { ApolloError } from 'apollo-client';
+import { Formik, FormikActions, FormikProps } from 'formik';
+import { GraphQLError } from 'graphql';
 import React, { useState } from 'react';
 import { useApolloClient } from 'react-apollo-hooks';
+import { Link } from 'react-router-dom';
 import {
+  LoginMutationVariables,
   MeDocument,
   useLoginMutation,
-  LoginMutationVariables,
 } from '../../components/apollo-components';
-import { Link } from 'react-router-dom';
+import { FormCard } from '../../components/FormCard';
+import { FormError } from '../../components/FormError';
 import { graphqlFormikError } from '../../hooks/useGraphqlFormikError';
-import { GraphQLError } from 'graphql';
-import { ApolloError } from 'apollo-client';
-
-interface LoginValues {
-  email: string;
-  password: string;
-}
 
 export const LoginPage: React.FC = () => {
   const login = useLoginMutation();
@@ -29,7 +26,6 @@ export const LoginPage: React.FC = () => {
   ) => {
     const { email, password } = variables;
     try {
-      formikActions.setSubmitting(false);
       const response = await login({ variables: { email, password } });
       const user = response.data!.login.user;
 
@@ -43,36 +39,29 @@ export const LoginPage: React.FC = () => {
       });
     } catch (e) {
       if (e instanceof ApolloError) {
-        console.log(e);
         const errors = graphqlFormikError(e.graphQLErrors, variables);
         if (errors) {
           formikActions.setErrors(errors.fieldErrors);
           setFormErrors(errors.formErrors);
         }
       }
+    } finally {
+      formikActions.setSubmitting(false);
     }
   };
 
   return (
-    <div>
-      <Formik
-        initialValues={{
-          email: '',
-          password: '',
-        }}
-        onSubmit={handleLogin}
-        render={(formikBag: FormikProps<LoginMutationVariables>) => {
-          return (
+    <Formik
+      initialValues={{
+        email: '',
+        password: '',
+      }}
+      onSubmit={handleLogin}
+      render={(formikBag: FormikProps<LoginMutationVariables>) => {
+        return (
+          <FormCard title="Login">
             <Form onSubmit={formikBag.handleSubmit} className="login-form">
-              {formErrors.length > 0 && (
-                <div>
-                  <ul>
-                    {formErrors.map((error, idx) => {
-                      return <li key={idx}>{error}</li>;
-                    })}
-                  </ul>
-                </div>
-              )}
+              {formErrors.length > 0 && <FormError formErrors={formErrors} />}
               <Form.Item name="email">
                 <Input
                   name="email"
@@ -101,9 +90,9 @@ export const LoginPage: React.FC = () => {
               </SubmitButton>
               Or <Link to="/auth/register"> register now!</Link>
             </Form>
-          );
-        }}
-      />
-    </div>
+          </FormCard>
+        );
+      }}
+    />
   );
 };

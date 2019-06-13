@@ -1,9 +1,9 @@
+import { plainToClass } from 'class-transformer';
 import { Ctx, Mutation, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
 import { AuthService } from '../../../service/AuthSerivce';
 import { IContext } from '../../../util/context';
 import { LogoutResponse } from './LogoutResponse';
-import { plainToClass } from 'class-transformer';
 
 @Service()
 @Resolver()

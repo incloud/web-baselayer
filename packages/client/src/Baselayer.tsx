@@ -1,5 +1,6 @@
 import { Layout } from 'antd';
 import React, { FC, useEffect } from 'react';
+import { useApolloClient } from 'react-apollo-hooks';
 import {
   Redirect,
   Route,
@@ -7,18 +8,12 @@ import {
   Switch,
   withRouter,
 } from 'react-router';
-import {
-  useMeQuery,
-  useLogoutMutation,
-  MeDocument,
-} from './components/apollo-components';
-import { PrivateRoute } from './components/PrivateRoute';
-import { HomePage } from './pages/HomePage';
-import { LoginPage } from './pages/auth/LoginPage';
+import { useLogoutMutation, useMeQuery } from './components/apollo-components';
 import { Header } from './components/Header';
-import { LogoutMutation } from './graphql/auth/LogoutMutation';
-import { useApolloClient } from 'react-apollo-hooks';
+import { PrivateRoute } from './components/PrivateRoute';
+import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
+import { HomePage } from './pages/HomePage';
 
 const { Content, Footer } = Layout;
 
@@ -29,7 +24,7 @@ const BaselayerCmp: FC<RouteComponentProps> = ({ history }) => {
   // https://github.com/apollographql/apollo-client/blob/master/packages/apollo-client/src/core/watchQueryOptions.ts
   // https://github.com/trojawski/react-apollo-hooks/pull/169
   // @ts-ignore
-  const loggedInUser = useMeQuery({ fetchPolicy: 'cache-first' });
+  const loggedInUser = useMeQuery({ fetchPolicy: 'cache-only' });
   const logout = useLogoutMutation();
   const isLoggedIn = !!(loggedInUser.data && loggedInUser.data.me);
 
@@ -42,7 +37,6 @@ const BaselayerCmp: FC<RouteComponentProps> = ({ history }) => {
   return (
     <Layout style={{ height: '100vh' }}>
       <Header
-        login={() => {}}
         logout={async () => {
           await logout();
 

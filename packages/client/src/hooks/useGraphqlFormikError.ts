@@ -1,7 +1,8 @@
-import { ExecutionResult, GraphQLError } from 'graphql';
 import { FormikErrors } from 'formik';
+import { ExecutionResult, GraphQLError } from 'graphql';
+import { FormError } from './../components/FormError';
 
-interface ValidationError {
+interface IValidationError {
   children: string[];
   constraints: {
     [k: string]: string;
@@ -10,19 +11,19 @@ interface ValidationError {
   value: string;
 }
 
-interface FlatErrors {
+interface IFlatErrors {
   [k: string]: string;
 }
 
-interface GraphQlFormikError<TVariables> {
-  fieldErrors: FormikErrors<TVariables>;
+interface IGraphQlFormikError<TVariables> {
+  fieldErrors: FormikErrors<Partial<TVariables>>;
   formErrors: string[];
 }
 
 const flattenValidationErrors = (
-  validationErrors: ValidationError[],
-): FlatErrors => {
-  return validationErrors.reduce<FlatErrors>((prev, validationError) => {
+  validationErrors: IValidationError[],
+): IFlatErrors => {
+  return validationErrors.reduce<IFlatErrors>((prev, validationError) => {
     prev[validationError.property] = Object.values(
       validationError.constraints,
     )[0];
@@ -35,9 +36,8 @@ export const graphqlFormikError = <TData, TVariables>(
   variables: TVariables,
 ) => {
   if (errors) {
-    const flattenedErrors = errors.reduce<GraphQlFormikError<TVariables>>(
+    const returnObject = errors.reduce<IGraphQlFormikError<TVariables>>(
       (prev, error) => {
-        debugger;
         if (error.extensions) {
           switch (error.extensions.code) {
             case 'ARGUMENT_VALIDATION_ERROR':
@@ -55,7 +55,7 @@ export const graphqlFormikError = <TData, TVariables>(
       },
       { fieldErrors: {}, formErrors: [] },
     );
-    return flattenedErrors;
+    return returnObject;
   }
   return null;
 };

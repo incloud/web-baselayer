@@ -1,8 +1,8 @@
 import { plainToClass } from 'class-transformer';
 import { Arg, Ctx, Mutation, Resolver } from 'type-graphql';
 import { Inject, Service } from 'typedi';
-import { AuthResponse } from '../shared/AuthResponse';
 import { AuthService } from '../../../service/AuthSerivce';
+import { AuthResponse } from '../shared/AuthResponse';
 import { IContext } from './../../../util/context';
 import { LoginInput } from './LoginInput';
 

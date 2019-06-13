@@ -37,8 +37,7 @@ const BrandWrapper = styled.div`
 export const Header: FunctionComponent<{
   isLoggedIn: boolean;
   logout: () => any;
-  login: () => any;
-}> = ({ isLoggedIn, logout, login }) => {
+}> = ({ isLoggedIn, logout }) => {
   return (
     <CustomHeader className="header">
       <HeaderRow>

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 // tslint:disable-next-line:no-var-requires
 require('dotenv-safe').config();
-const cookieParser = require('cookie-parser');
+import cookieParser = require('cookie-parser');
 
 import * as Sentry from '@sentry/node';
 import { ApolloServer } from 'apollo-server-express';

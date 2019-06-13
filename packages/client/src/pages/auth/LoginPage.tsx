@@ -2,7 +2,6 @@ import { Form, Input, SubmitButton } from '@jbuschke/formik-antd';
 import { Icon } from 'antd';
 import { ApolloError } from 'apollo-client';
 import { Formik, FormikActions, FormikProps } from 'formik';
-import { GraphQLError } from 'graphql';
 import React, { useState } from 'react';
 import { useApolloClient } from 'react-apollo-hooks';
 import { Link } from 'react-router-dom';

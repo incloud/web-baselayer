@@ -15,7 +15,6 @@ import { useApolloClient } from 'react-apollo-hooks';
 import {
   MeDocument,
   RegisterMutationVariables,
-  useLoginMutation,
   useRegisterMutation,
 } from '../../components/apollo-components';
 import { FormCard } from '../../components/FormCard';

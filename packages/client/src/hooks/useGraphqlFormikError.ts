@@ -1,6 +1,5 @@
 import { FormikErrors } from 'formik';
-import { ExecutionResult, GraphQLError } from 'graphql';
-import { FormError } from './../components/FormError';
+import { GraphQLError } from 'graphql';
 
 interface IValidationError {
   children: string[];

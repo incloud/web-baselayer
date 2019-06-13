@@ -2,7 +2,7 @@ import { Card } from 'antd';
 // tslint:disable-next-line:no-submodule-imports
 import { CardProps } from 'antd/lib/card';
 import React, { FC } from 'react';
-import { css, styled } from '../theme';
+import { styled } from '../theme';
 
 const FormCardContainer = styled.div`
   display: flex;

@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  strategy: 
+    type: Recreate
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+        pipelineId: '{{.Env.CI_PIPELINE_ID}}'
+    spec:
+      securityContext:
+        runAsUser: 70
+      containers:
+      - name: postgres
+        image: {{.Env.IMAGE_TAG_POSTGRES}}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5432
+        envFrom:
+        - configMapRef:
+            name: postgres
+        - secretRef:
+            name: postgres
+        - configMapRef:
+            name: shared
+        - secretRef:
+            name: shared
+        volumeMounts:
+          - mountPath: "/var/lib/postgresql/"
+            name: postgres
+      imagePullSecrets:
+      - name: regsecret
+      volumes:
+        - name: postgres
+          persistentVolumeClaim:
+            claimName: postgres

@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: server
+data:
+  DATABASE_HOST: {{ getenv "DATABASE_HOST" "postgres" }}
+  DATABASE_PORT: '{{ getenv "DATABASE_PORT" "5432" }}'
+  DATABASE_NAME: {{ getenv "DATABASE_NAME" "baselayer" }}
+  PUBLIC_KEY_BASE64: {{ .Env.PUBLIC_KEY_BASE64 }}
+  ENABLE_INTROSPECTION: '{{ getenv "ENABLE_INTROSPECTION" "true" }}'
+  ENABLE_PLAYGROUND: '{{ getenv "ENABLE_PLAYGROUND" "true" }}'
+  REDIS_HOST: {{ getenv "REDIS_HOST" "redis" }}
+  ACCESS_TOKEN_EXPIRY_TIME: '{{ getenv "ACCESS_TOKEN_EXPIRY_TIME" "300" }}'
+  REFRESH_TOKEN_EXPIRY_TIME: '{{ getenv "REFRESH_TOKEN_EXPIRY_TIME" "2592000" }}'
+  PASSWORD_RESET_TOKEN_EXPIRY_TIME: '{{ getenv "PASSWORD_RESET_TOKEN_EXPIRY_TIME" "3000" }}'
+  MAILER_HOST: {{ .Env.MAILER_HOST }}
+  MAILER_PORT: '{{ .Env.MAILER_PORT }}'
+  MAILER_FROM: {{ .Env.MAILER_FROM }}

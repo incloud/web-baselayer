@@ -1,0 +1,20 @@
+entity: User
+processor: ./processor/UserProcessor
+items:
+  dev:
+    email: 'dev@incloud.de'
+    firstName: '{{name.firstName}}'
+    lastName: '{{name.lastName}}'
+    phoneNumber: '{{phone.phoneNumber}}'
+    birthYear: '{{random.number}}'
+    passwordPlain: 'password'
+    acceptedTermsAndConditions: true
+  user{1..10}:
+    email: '{{internet.email}}'
+    firstName: '{{name.firstName}}'
+    lastName: '{{name.lastName}}'
+    phoneNumber: '{{phone.phoneNumber}}'
+    birthYear: '{{random.number}}'
+    passwordPlain: 'password'
+    acceptedTermsAndConditions: true
+

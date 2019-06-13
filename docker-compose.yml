@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:11
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    ports:
+      - 5432:5432
+
+  redis:
+    image: redis:5.0.3-alpine
+    command: ['redis-server', '--appendonly', 'yes']
+    ports:
+      - 6379:6379
+
+  server:
+    image: node:10.15
+    working_dir: /var/app
+    command: yarn run start --scope=@baselayer/server
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_PORT=5432
+      - DATABASE_NAME
+      - DATABASE_USER
+      - DATABASE_PASSWORD
+      - REDIS_HOST=redis
+    depends_on:
+      - db
+      - redis
+    ports:
+      - '4000:4000'
+      - '9229:9229'
+    volumes:
+      - '.:/var/app'
+
+  client:
+    image: node:10.15
+    working_dir: /var/app
+    command: yarn run start --scope=@baselayer/client
+    ports:
+      - '3000:3000'
+    volumes:
+      - '.:/var/app'
+
+  node:
+    image: node:10.15
+    working_dir: /var/app
+    command: yarn run watch
+    volumes:
+      - '.:/var/app'

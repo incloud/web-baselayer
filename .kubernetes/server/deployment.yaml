@@ -1,0 +1,36 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: server
+spec:
+  replicas: 1
+  strategy: 
+    type: Recreate
+  selector:
+    matchLabels:
+      app: server
+  template:
+    metadata:
+      labels:
+        app: server
+        pipelineId: '{{.Env.CI_PIPELINE_ID}}'
+    spec:
+      securityContext:
+        runAsUser: 2000
+      containers:
+      - name: server
+        image: {{.Env.IMAGE_TAG_SERVER}}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 4000
+        envFrom:
+        - configMapRef:
+            name: server
+        - secretRef:
+            name: server
+        - configMapRef:
+            name: shared
+        - secretRef:
+            name: shared
+      imagePullSecrets:
+      - name: regsecret

@@ -1,0 +1,23 @@
+{
+  "name": "baselayer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "bootstrap": "lerna bootstrap",
+    "start": "lerna run start --stream",
+    "build": "lerna run build --stream",
+    "watch": "lerna run watch --stream",
+    "test": "lerna run test --stream",
+    "lint": "lerna run lint --stream",
+    "clean": "lerna clean && lerna run clean --stream",
+    "lerna": "lerna"
+  },
+  "devDependencies": {
+    "lerna": "^3.10.7"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  }
+}

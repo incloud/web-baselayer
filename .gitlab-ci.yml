@@ -1,0 +1,241 @@
+variables:
+  KUBE_NAME: baselayer
+  CACHE_BRANCH: develop
+
+  CACHE_IMAGE_TAG_SERVER: $CI_REGISTRY_IMAGE/server:$CACHE_BRANCH
+  CACHE_IMAGE_TAG_NGINX: $CI_REGISTRY_IMAGE/nginx:$CACHE_BRANCH
+  CACHE_IMAGE_TAG_POSTGRES: $CI_REGISTRY_IMAGE/postgres:$CACHE_BRANCH
+
+  IMAGE_TAG_SERVER: $CI_REGISTRY_IMAGE/server:$CI_COMMIT_REF_SLUG
+  IMAGE_TAG_NGINX: $CI_REGISTRY_IMAGE/nginx:$CI_COMMIT_REF_SLUG
+  IMAGE_TAG_POSTGRES: $CI_REGISTRY_IMAGE/postgres:$CI_COMMIT_REF_SLUG
+
+  # Configure postgres service
+  POSTGRES_DB: baselayer
+  POSTGRES_USER: baselayer
+  POSTGRES_PASSWORD: baselayer
+
+stages:
+  - build
+  - test
+  - emit
+  - deploy
+
+build:
+  stage: build
+  image: docker.incloud.zone/incloud/docker-gitlab-runner
+  script:
+    - ./.gitlab-ci/build.sh
+  tags:
+    - docker
+
+test:lint:
+  image: $IMAGE_TAG_SERVER
+  stage: test
+  allow_failure: false
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - cd /var/app
+    - yarn run lint
+  tags:
+    - docker
+
+test:jest-server:
+  image: $IMAGE_TAG_SERVER
+  stage: test
+  allow_failure: true
+  services:
+    - postgres:11.1-alpine
+    - redis:5.0.3-alpine
+  variables:
+    GIT_STRATEGY: none
+    REDIS_HOST: redis
+    DATABASE_HOST: postgres
+    DATABASE_PORT: '5432'
+    DATABASE_NAME: baselayer
+    DATABASE_USER: baselayer
+    DATABASE_PASSWORD: baselayer
+    PRIVATE_KEY_BASE64: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlKS1FJQkFBS0NBZ0VBdTh1NDNvaWkzVzBHZnpIdmlYbkJrYTR1eDA3NmNRY3I3a2t0Z0c1dkNjT3A4QVVHCk5JVGFZckg0RVZlbWs5MnlyeDRxTzJHc1RyOG1vZkllZDRuVlZCaUdFTHhEMmlmY3M1UVdrbDcyNmxMT3N1MmIKVnZGM1JBcys4bzBJMmFmd3NKYm1TMWZCM252cXQ2bHF3QnhIUTZBSDhpOUJDNmE4ZU9POSs1UnE4M2R0VHBIRQoydGlrY0ZXcmJhZFIzbHpJZTcwbkNFNFFUS0I0ZlBmanMwN0ZaNkVsb1llS2lnbWpGczJvd0JuY3FwSDhmcHVQCkR0b29GV0N4ZVJFZmROdGRwVnlZdHVSU2VteG5ZQUd2ZWlqWXdsTnhHSWtpQnc3ZkZ6UlJxNzZ1d0VFeXJrYzAKZy9IcVJmZjV0VEVzRWxabVJqSVdZRjlyaks4eHhQR1ZsTU1qbnRpRnkrNlpqMHZBcXk1NkZxMW9rZWNuNE9qUwpHYmJ1anBvQjFnUW1VZ2laTVEreWlxbHZ4Uk5aQ2doRU83TDZHVDNKRisrV1lacFQzYVV0YnZsWGZiblZKTGp5CmtCcnBvQVh2ay9TWUh2L2J5ZWFKb0dway8rQ2ltdjNnSU9KaldEcWN1VzlSSFFZZHNvZVRsVUJQZEtpVTFMZ28KQjlzWE8yZWpzN0xSMkFFUlU0Y082bkVFeHB1TXc5WW92Y1VxKzcvN2hMUjBKL093ZG5xWE84dTlCWG03QVFUbQpyL2pjRjBURVNrRjA3Uks3UmZwYUk5dnI3L3N2TmwrWnZzNk5hZm1zbU55ZVJmMlltNkhJVkg4a0lqU3gxc28wClZrc280bmVQNUxITGpXMmZ5YldvTXc5alBiR29IbGJMZWRjU3dqRWhHdTM3UURxRFNMaERZMTBQMktrQ0F3RUEKQVFLQ0FnRUFvOEhXQjFjbWplZFFUd0lBV3VUdFFsZWRPdmRIcytBSkV0U0U5UVZYbGpBa3M4UHQwVVk0R1BBUAozUytOZGt0UVVSd0F2NTlBWGJxWnVZWWp3eUZTQU84Um1PNVNUSjJOK3BvYnhLOUNxTHBrdStvdUZ2YWdoWms0CjN0RFU4dGRiTHVHbkYvUUNmanVZUldkYVN3TmRzVDZQTDBTOWQ2ZUJtZmtkNVk5YVk4dTBhVnI3U2NxNE9heTYKdS9lM2tDdGdOMmFON3RRRHFvNFVBd1UyYlZrM0VsS1hPZSt6Z3dNOFQ5b3VXTFUwa3hpU0VPVWRMbHBWc2E2TAprNEsyNTNPU2lXdmhUenB5SVliOTdkNEtZbi9UNUVCVzBvcGlQYjFlRkNIdlJkQVZHbGpBRlBES2ZuUXBVYklXCjhVVmJwUEhxWlRPd0I0R3RpeFFLVmk1RHZXRWNZUnBIbm0zWXVaQjRwZnA3NWg1RjVIZHgxaFhnOWxNTlZIRGIKdWJMVnE2aE51cHdacHM3b3JVSGdzRlZaN2tNUEhWTWJwdGFNVGFuK25lYVppbWhEZlhGWllpUjZjYmxXTi9ESAo5bkJRNjUxUTV4V2lmUmQ0anBjR21Kb3MrWkdSeSt4Q0FTNjlmWXFnRHM4QWk2eGtyeHN0ZjZzdDNlTCtLZlFoCnE4OGR4SmluQnF0c1FRMUVTLzVobDFPRFhadndZK0dWc3RzbVd3WE9XcGZEN1htbk4wZ0lVdE16YTZ4VFVhbUQKenNQYkJhQk9DcXRyUWJ6RlUxQUlWd2JnNm8rdzFxUnRoeWxCcGUvUER1TnBBaEZHNTNFRHlUNmlBSlVNaTgweQpxZHZsV1p5L3RVRUZjMDhNUnU2UnIveUhxc3EvRjZiNVNjcFNEd0RZQWdPVU8raWRGc0VDZ2dFQkFQZGZEY3ZYCjBZcTVQaTg1bjVsL2JBUWRZQ0RuREptNlk2QmkzVFdXbTBoNmRSdjMxcWwyRmRFYkc1TnZwdVFGYy93bnBYUU4KbVVIWlJWN2pzTEJiNHRHNEFWZFpxWUZyWFAxUjlCODZuM1ZrRzZnY21KalB6dzcybkNmUGVqSktoSVFmdk5MNgpaeDZTTUNodVE0cXJ5NHM0RTVYdTRoRVR5L09XbDEyU1ZOM3daNDZLU3FvR1lndnVlQmZDVWxVNS9KeC9ZS0F5Cm9kcnRQdXpCZVZWNDBNYTBqK1Q4bEUrTmZJQjVEZ0VENDRoYUlQTnFKQzM4K3VHUHh0dDBpQ1RvZG45RGdIaU4KSXdJMFpSUzBLMzROOVMrL1dDVUZvQVZsa2xDbVJEc0NLQ1RiZlhFMVFXR0JZaStNZTFTNEtRMzZLeTlHZXF4OQpSL04rUkUxcnphSGVhVFVDZ2dFQkFNSllyWmN0Sll6RTRrSkdyaDBEWXR0dTdjTUgzUE1MR2VndmhxZkF3MlJhCmtZeUpRTlgrcnQ3N3RvOU51cTczRkttMjFVRzd3bXdaSjdTdmpSSzNxem9Ca0dnQ2FZeFN6ZFYrdC9maEFHWmcKcDFvUklnR3Zyc21EZ0dhTlJrKzNnV3dpM21XZk5RUlp2bFN2TUc1TitpUnJZWWs2cW5pT1kySkx0OERwb1haVApTeHMvckF0ckFpaTk1WEZXeFpzUDN1NHdSY01MWFY0VkovQUl6YlVvS000TVFLaFZ4RXJkSGxaM0s0UjRPOXUvCmxFSUdFYXRiZlJ6THdJTEVFazIxTVU4UXNCTlN0Q0hnTGFjSy8weEVrRGREK2pldnc0UzVIUnpVMklCU3BNdW4KbWdNU0UyWS9FL1RSbGlhVHBteXpUZTFDOWhyRlo0NDJ1bHpOVFZHNGxDVUNnZ0VCQU5pNTFOS0U4VGNDK1BKVApIL3RSNGdidzNhbTJCQm9qYk9tMTlHemcySWQxa21qQWlMZkxsMjJ1dkVnK0NBKzZuMVdLUHJFZ3dPY3FQbGJXClVaVVJ5L1ZGcXhjbW5SV2dSTVpFS1FlN1NyMkV5WjVOLzN2U2hXeHNyMzlKalp2R0liZklQcHp4ZWFzVkZWQTIKMnNJQnBjRUJqbGRNQlpCRXNlbG1SSk5jZ3pJM1QrTllVZllJeFpvQ2dnRCs1VGQ2S0ZITVg1RzdDb2RPV0ZVQgpaUlozVlNMaVN6ZXAreDUvclZhNXVJVTNMUC9uUnZzOFFScHhqRFJXelRpMExodDM5Mm1rY0VndUR6LzlPNW9hCkNBalduYndKZm1aaE9VUEJLNkd4S2hJdzM0NzdKam9yR0c4ZTlqRUdlWDlPSWRuM0ZpTERNdk13aC90UzR2Q1oKeEgxTzZRa0NnZ0VBRHZVc1J4cGViWHNwdnRnWnhubmdQZXRIdVY3OWptY29VMHAxSHF3alhiSHF5ZG8yZDBIbQp5NXFyN2xPWkxxWXRuUEpKYjRtMzZRSDJvRjF5aWlKQXQzSXZYeEh3ZGJCWnp6aTFpQXAxTVd2MjlXT2tMbVVMCkdzOVlMb3hwQVBHcXNGdnVxZnVhNVA3VE8wbFFmT3piZDdvY0E2ZlVQdnNXZ3hZNHlrd3c5UjVzQldqZElQUFgKY3JOSzJYSklPeXI1aVhPRnF3RlE2bERPaGhiblhpMzlGZjZ6YTBGT25rUnVkVkV1dEQ5Y3ZBaityQ1l6YmZEWQpyRUt5U2w0MDJtNDdvVTR6ZndrNmUvRDVFb1l5Si9pTzhQSDJiQnJHL1l3UnhZcE1MM1FzNHMrL2RzVUpZVEV4CnBBSU5nR0tVeUlEMFduSnc1cGFTNWNzb2hNUDRVM1hWVVFLQ0FRQWdHd3NHeXpJU3pGbzM0TFpKMXA2cDh3VlkKRTRGTHJWT2VxczVzY0Vza2lrOG1BcFpWMm5mQ2d0N1VoWDFpakY1MHRKSU44RUdicTZXWDdRekFnaVl0SXVVWQo1UlpwQkYyUnNRL3BDR3B3TjFmd1J1R3FuS1poQm45YmlGYUgwSDljVXh2T1NsbE5DcDNDUjNuSFc4Yk54bmJ3ClovWEpOcWtNQnRUbldKeU8wbmJlV1VaTmZyWjBRWUdyd2pINEpVeDlGUUFKRVoxTWx0aDRIWXp2SWR1VmdLaW4KOEkyeUx1MEJrOExTTW1nMWMxYlhYV254dnpFV0xaNEc5ZUJ4NG9TVlpGM0ZieElLVnRDamhXSUtuVzhGWWQ5Ugo2WWtoSDdING15N2tNNGFCeHdScDRRcXRJaENyemtLREZXOUJTWDlpYkRCTlM3aVcvc3Q4S3EvMytOc2EKLS0tLS1FTkQgUlNBIFBSSVZBVEUgS0VZLS0tLS0K
+    PUBLIC_KEY_BASE64: LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQ0lqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FnOEFNSUlDQ2dLQ0FnRUF1OHU0M29paTNXMEdmekh2aVhuQgprYTR1eDA3NmNRY3I3a2t0Z0c1dkNjT3A4QVVHTklUYVlySDRFVmVtazkyeXJ4NHFPMkdzVHI4bW9mSWVkNG5WClZCaUdFTHhEMmlmY3M1UVdrbDcyNmxMT3N1MmJWdkYzUkFzKzhvMEkyYWZ3c0pibVMxZkIzbnZxdDZscXdCeEgKUTZBSDhpOUJDNmE4ZU9POSs1UnE4M2R0VHBIRTJ0aWtjRldyYmFkUjNsekllNzBuQ0U0UVRLQjRmUGZqczA3RgpaNkVsb1llS2lnbWpGczJvd0JuY3FwSDhmcHVQRHRvb0ZXQ3hlUkVmZE50ZHBWeVl0dVJTZW14bllBR3ZlaWpZCndsTnhHSWtpQnc3ZkZ6UlJxNzZ1d0VFeXJrYzBnL0hxUmZmNXRURXNFbFptUmpJV1lGOXJqSzh4eFBHVmxNTWoKbnRpRnkrNlpqMHZBcXk1NkZxMW9rZWNuNE9qU0diYnVqcG9CMWdRbVVnaVpNUSt5aXFsdnhSTlpDZ2hFTzdMNgpHVDNKRisrV1lacFQzYVV0YnZsWGZiblZKTGp5a0JycG9BWHZrL1NZSHYvYnllYUpvR3BrLytDaW12M2dJT0pqCldEcWN1VzlSSFFZZHNvZVRsVUJQZEtpVTFMZ29COXNYTzJlanM3TFIyQUVSVTRjTzZuRUV4cHVNdzlZb3ZjVXEKKzcvN2hMUjBKL093ZG5xWE84dTlCWG03QVFUbXIvamNGMFRFU2tGMDdSSzdSZnBhSTl2cjcvc3ZObCtadnM2TgphZm1zbU55ZVJmMlltNkhJVkg4a0lqU3gxc28wVmtzbzRuZVA1TEhMalcyZnliV29NdzlqUGJHb0hsYkxlZGNTCndqRWhHdTM3UURxRFNMaERZMTBQMktrQ0F3RUFBUT09Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo=
+    ACCESS_TOKEN_EXPIRY_TIME: '300'
+    REFRESH_TOKEN_EXPIRY_TIME: '2592000'
+    PASSWORD_RESET_TOKEN_EXPIRY_TIME: '3000'
+    MAILER_HOST: 'test'
+    MAILER_PORT: 'test'
+    MAILER_USER: 'test'
+    MAILER_PASSWORD: 'test'
+    MAILER_FROM: 'test'
+    HOST: 'test'
+  script:
+    - cd /var/app/packages/server
+    - yarn run test:ci
+  tags:
+    - docker
+
+.deploy:kubernetes: &deployKubernetesTemplate
+  stage: deploy
+  image: docker.incloud.zone/incloud/kubernetes/kube-deploy:v1.10.5
+  when: manual
+  tags:
+    - docker
+
+emit:emit-schema:
+  image: $IMAGE_TAG_SERVER
+  stage: emit
+  allow_failure: false
+  script: 
+    - cd /var/app/packages/server
+    - yarn run emitSchema
+  after_script:
+    - mv /var/app/packages/server/schema.json $CI_PROJECT_DIR
+  tags:
+    - docker
+  artifacts:
+    paths:
+      - schema.json
+
+.deploy:kubernetes:stop: &deployKubernetesStopTemplate
+  stage: deploy
+  image: docker.incloud.zone/incloud/kubernetes/kube-deploy:v1.10.5
+  when: manual
+  script:
+    - .kubernetes/delete_deployments.sh
+  tags:
+    - docker
+
+deploy:master:
+  <<: *deployKubernetesTemplate
+  when: manual
+  script:
+    - .kubernetes/deploy.sh
+    - .kubernetes/schema-update.sh
+  variables:
+    KUBE_NAMESPACE: ${KUBE_NAME}-master
+    NGINX_HOST: ${KUBE_NAME}.k8s.incloud.de
+    DROP_SCHEMA: 'true'
+    LOAD_FIXTURES: 'true'
+    PRIVATE_KEY_BASE64: $PRIVATE_KEY_BASE64_MASTER
+    PUBLIC_KEY_BASE64: $PUBLIC_KEY_BASE64_MASTER
+    SENTRY_DSN: $SENTRY_DSN_MASTER
+    MAILER_HOST: $MAILER_HOST_MASTER
+    MAILER_PORT: $MAILER_PORT_MASTER
+    MAILER_USER: $MAILER_USER_MASTER
+    MAILER_PASSWORD: $MAILER_PASSWORD_MASTER
+    MAILER_FROM: $MAILER_FROM_MASTER
+  environment:
+    name: master
+    url: https://$NGINX_HOST
+    on_stop: deploy:master:stop
+  only:
+    - master
+
+deploy:master:stop:
+  <<: *deployKubernetesStopTemplate
+  variables:
+    KUBE_NAMESPACE: ${KUBE_NAME}-master
+  environment:
+    name: master
+    action: stop
+  only:
+    - master
+
+# deploy:develop:
+#   <<: *deployKubernetesTemplate
+#   when: on_success
+#   script:
+#     - .kubernetes/deploy.sh
+#     - .kubernetes/schema-update.sh
+#   variables:
+#     KUBE_NAMESPACE: ${KUBE_NAME}-develop
+#     NGINX_HOST: ${KUBE_NAME}-develop.k8s.incloud.de
+#     DROP_SCHEMA: 'true'
+#     LOAD_FIXTURES: 'true'
+#     PRIVATE_KEY_BASE64: $PRIVATE_KEY_BASE64_DEVELOP
+#     PUBLIC_KEY_BASE64: $PUBLIC_KEY_BASE64_DEVELOP
+#     SENTRY_DSN: $SENTRY_DSN_DEVELOP
+#     MAILER_HOST: $MAILER_HOST_DEVELOP
+#     MAILER_PORT: $MAILER_PORT_DEVELOP
+#     MAILER_USER: $MAILER_USER_DEVELOP
+#     MAILER_PASSWORD: $MAILER_PASSWORD_DEVELOP
+#     MAILER_FROM: $MAILER_FROM_DEVELOP
+#   environment:
+#     name: develop
+#     url: https://$NGINX_HOST
+#     on_stop: deploy:develop:stop
+#   only:
+#     - develop
+
+# deploy:develop:stop:
+#   <<: *deployKubernetesStopTemplate
+#   variables:
+#     KUBE_NAMESPACE: ${KUBE_NAME}-develop
+#   environment:
+#     name: develop
+#     action: stop
+#   only:
+#     - develop
+
+# deploy:review:
+#   <<: *deployKubernetesTemplate
+#   when: manual
+#   script:
+#     - .kubernetes/deploy.sh
+#     - .kubernetes/schema-update.sh
+#   variables:
+#     KUBE_NAMESPACE: ${KUBE_NAME}-review
+#     NGINX_HOST: ${KUBE_NAME}-review.k8s.incloud.de
+#     DROP_SCHEMA: 'true'
+#     LOAD_FIXTURES: 'true'
+#     PRIVATE_KEY_BASE64: $PRIVATE_KEY_BASE64_REVIEW
+#     PUBLIC_KEY_BASE64: $PUBLIC_KEY_BASE64_REVIEW
+#     SENTRY_DSN: $SENTRY_DSN_REVIEW
+#     MAILER_HOST: $MAILER_HOST_REVIEW
+#     MAILER_PORT: $MAILER_PORT_REVIEW
+#     MAILER_USER: $MAILER_USER_REVIEW
+#     MAILER_PASSWORD: $MAILER_PASSWORD_REVIEW
+#     MAILER_FROM: $MAILER_FROM_REVIEW
+#   environment:
+#     name: review
+#     url: https://$NGINX_HOST
+#     on_stop: deploy:review:stop
+#   only:
+#     - /feature\/.*/
+
+# deploy:review:stop:
+#   <<: *deployKubernetesStopTemplate
+#   variables:
+#     KUBE_NAMESPACE: ${KUBE_NAME}-review
+#   environment:
+#     name: review
+#     action: stop
+#   only:
+#     - /feature\/.*/
+
+# deploy:master:
+#   <<: *deployKubernetesTemplate
+#   script:
+#     - .kubernetes/deploy.sh
+#   variables:
+#     KUBE_NAMESPACE: ${KUBE_NAME}-master
+#     NGINX_HOST: ${KUBE_NAME}.k8s.incloud.de
+#     SENTRY_DSN: $SENTRY_DSN_MASTER
+#     DATABASE_HOST: $DATABASE_HOST_MASTER
+#     DATABASE_PORT: $DATABASE_PORT_MASTER
+#     DATABASE_NAME: $DATABASE_NAME_MASTER
+#     DATABASE_USER: $DATABASE_USER_MASTER
+#     MAILER_HOST: $MAILER_HOST_MASTER
+#     MAILER_PORT: $MAILER_PORT_MASTER
+#     MAILER_USER: $MAILER_USER_MASTER
+#     MAILER_PASSWORD: $MAILER_PASSWORD_MASTER
+#     MAILER_FROM: $MAILER_FROM_MASTER
+#     DATABASE_PASSWORD: $DATABASE_PASSWORD_MASTER
+#     PRIVATE_KEY_BASE64: $PRIVATE_KEY_BASE64_DEVELOP
+#     PUBLIC_KEY_BASE64: $PUBLIC_KEY_BASE64_DEVELOP
+#     ENABLE_INTROSPECTION: 'false'
+#     ENABLE_PLAYGROUND: 'false'
+#   environment:
+#     name: master
+#     url: https://$NGINX_HOST
+#   only:
+#     - /^master$/

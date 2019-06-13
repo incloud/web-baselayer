@@ -1,0 +1,10 @@
+node_modules/
+dist/
+lib/
+yarn-error.log
+.env
+!/.env
+/volumes
+/.vscode
+/tmp
+**/**/coverage/**
